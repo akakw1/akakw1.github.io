@@ -1,0 +1,57 @@
+body {
+	background-image: url("https://cdn.luogu.org/upload/pic/41066.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center 0;
+	font-size: 16px;
+	font-family: "Ubuntu Mono", "微软雅黑";
+	color: rgb(0,0,0);
+}
+body{cursor:url('image/cursor.png'),auto;}
+A{cursor:url('image/cursor.png'),auto;}
+input{cursor:url('image/cursor.png'),auto;}
+wait{cursor:url('image/cursor.png'),auto;}
+#mainhome {
+	margin: 0 auto;
+	width: 80%;
+}
+#header {
+	font-size: 54px;
+	text-align: center;
+	color: rgb(0,0,0);
+	background: rgba(255,255,255,0.7);
+	border-radius: 16px;
+	-webkit-border-radius: 16px;
+}
+a {
+	color: rgb(50,50,255);
+	text-decoration: none;
+}
+#mainlinks {
+	margin-top: 12px;
+	font-size: 24px;
+	text-align: center;
+	background: rgba(255,255,255,0.7);
+	padding: 12px;
+}
+#mainlink {
+	text-align: center;
+	background: rgba(0,0,0,0.2);
+	border-radius: 16px;
+	-webkit-border-radius: 16px;
+	margin-left: 1em;
+	margin-right: 1em;
+	padding-left: 16px;
+	padding-right: 16px;
+}
+#mainlink:hover {
+	background: rgba(0,0,0,0.5);
+}
+#post {
+	background: rgba(255,255,255,0.7);
+	font-size: 18px;
+}
+.round-icon {
+	border-radius: 100%;
+	-webkit-border-radius: 100%;
+}
