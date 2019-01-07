@@ -1,12 +1,13 @@
 body {
-	background-image: url("https://cdn.luogu.org/upload/pic/41066.png");
+	background-image: url("image/1.png");
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center 0;
 	font-size: 16px;
-	font-family: "Ubuntu Mono", "微软雅黑";
+	font-family: "Ubuntu Mono", "微软雅黑", "Consolas";
 	color: rgb(0,0,0);
 }
+html {cursor:url('image/cursor.png'),auto;}
 body{cursor:url('image/cursor.png'),auto;}
 A{cursor:url('image/cursor.png'),auto;}
 input{cursor:url('image/cursor.png'),auto;}
