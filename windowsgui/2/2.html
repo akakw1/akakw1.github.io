@@ -1,1 +1,167 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>简单窗体</title></head>
+<body><h1>简单窗体</h1>
+<h2>主函数</h2>
+<p>窗体的主函数类似于控制台的主函数，是整个程序的起点，只不过参数略有不同</p>
+<pre><code class='language-cpp' lang='cpp'>int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+</code></pre>
+<ul>
+<li><p><code>WINAPI</code>：一个修饰符，被宏定义为<code>__stdcall</code>，不需要了解，可以上百度百科查看</p>
+</li>
+<li><p><code>hInstance</code>：操作系统为程序生成的一个实例句柄（详见1.1）</p>
+</li>
+<li><p><code>hPrevInstance</code>：现在已经不使用这个了，但仍然需要保留（向下兼容？）</p>
+</li>
+<li><p><code>lpCmdLine</code>：程序被运行时从操作系统传递的参数（不保留程序名）</p>
+<p>如果在<code>cmd</code>输入<code>XXX.exe abcd</code>，<code>XXX.exe</code>将被运行，这个参数将指向<code>&quot;abcd&quot;</code>这个字符串</p>
+</li>
+<li><p><code>nCmdShow</code>：这个参数在启动过程中被传递给应用程序，带有如何打开主应用程序的信息（此处不进行更多介绍）</p>
+</li>
 
+</ul>
+<h2>注册窗口类</h2>
+<p>每个窗口都由一个类来指定窗口的格式，所以在创建主窗口之前我们需要注册一个窗口类（其它窗口可以使用系统内置的窗口类也可以自定义）</p>
+<p>对于窗口类的注册，我们需要先填写一个结构体<code>WNDCLASSEX</code>，类似于填写一张表格，然后使用<code>Windows API</code>进行提交</p>
+<p>这个结构体大概是这样的：</p>
+<pre><code class='language-cpp' lang='cpp'>typedef struct WNDCLASSEX {
+	UINT cbSize;
+	UINT style;
+	WNDPROC lpfnWndProc;
+	int cbClsExtra;
+	int cbWndExtra;
+	HINSTANCE hInstance;
+	HICON hIcon;
+	HCURSOR hCursor;
+	HBRUSH hbrBackground;
+	LPCTSTR lpszMenuName;
+	LPCTSTR lpszClassName;
+	HICON hIconSm;
+} WNDCLASSEX, *PWNDCLASSEX;
+</code></pre>
+<p>通过设置这些内容，我们就可以对窗口进行设置了</p>
+<ul>
+<li><p><code>cbSize</code>：这个结构体的大小，使得作为指针传递时，其它程序不用计算这个结构体的大小从而提高速度，直接填<code>sizeof(WNDCLASSEX)</code>即可</p>
+</li>
+<li><p><code>style</code>：描述窗口基本样式的参数，这些参数是一些宏定义的二进制数，可以使用位运算符<code>|</code>同时选择多个样式或者<code>^</code>反选样式</p>
+<p>几个常用的样式：</p>
+<ol start='' >
+<li><code>CS_HREDRAW|CS_VREDRAW</code>：移动或者改变窗口高度/宽度时刷新窗口</li>
+<li><code>CS_DBLCLKS</code>：用户双击窗口时向窗口发送双击消息</li>
+<li><code>CS_NOCLOSE</code>：窗口中的 关闭 按钮不可见</li>
+
+</ol>
+</li>
+<li><p><code>lpfnWndProc</code>：指向此类窗口的事件处理函数的指针（关于事件处理函数的定义见1.1）</p>
+</li>
+<li><p><code>cbClsExtra/cbWndExtra</code>：这两个参数原是为指示Windows将附加的运行时间信息保存到Windows类某些单元而设计的，但是我们很少用到，所以，将其设为0甚至不设置它的值。</p>
+</li>
+<li><p><code>hInstance</code>：直接填操作系统传递给程序的这个参数即可</p>
+</li>
+<li><p><code>hIcon/hIconSm</code>：显示在窗口菜单栏和和底部任务栏的图标，在后面装载资源的章节将会提到</p>
+</li>
+<li><p><code>hCursor</code>：鼠标样式，在后面装载资源的章节会提到</p>
+</li>
+<li><p><code>hbrBackground</code>：初始时窗口的背景（纯色），在后面装载资源的章节会提到</p>
+</li>
+<li><p><code>lpszMenuName</code>：它是菜单资源名称的空值终止ASCII字符串，用于加载和选用窗口</p>
+</li>
+<li><p><code>lpszClassName</code>：注册的窗口类的类名</p>
+</li>
+
+</ul>
+<p>接下来我们可以创建一个窗口类了，通常我们对这些进行选择性赋值</p>
+<pre><code class='language-cpp' lang='cpp'>	WNDCLASSEX wc; //创建一个类
+	memset(&amp;wc,0,sizeof(wc));//重置(指针为NULL,数字为0)
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.lpfnWndProc = WndProc;
+	wc.hInstance = hInstance;
+	wc.hCursor = NULL;
+	
+	wc.hbrBackground = NULL;
+	wc.lpszClassName = &quot;WindowClass&quot;;
+	wc.hIcon = NULL;
+	wc.hIconSm = NULL;
+</code></pre>
+<p>接下来我们要提交这个结构体</p>
+<pre><code class='language-cpp' lang='cpp'>	if(!RegisterClassEx(&amp;wc)) { //提交
+        //提交失败——报告错误并结束程序
+		MessageBox(NULL, &quot;Window Registration Failed!&quot;, &quot;Error!&quot;, MB_ICONEXCLAMATION | MB_OK); //调用这个函数是会出现一个对话框，具体会在控件中提到
+		return 0;
+	}
+</code></pre>
+<h2>创建窗口</h2>
+<p>我们一般用<code>CreateWindowEx</code>函数创建窗口</p>
+<pre><code class='language-cpp' lang='cpp'>HWND CreateWindowEx(
+	DWORD dwExStyle,
+	LPCTSTR lpClassName,
+	LPCTSTR lpWindowName,
+	DWORD dwStyle,
+	int x, int y,
+	int nWidth, int nHeight,
+	HWND hWndParent,
+	HMENU hMenu,
+	HINSTANCE hInstance,
+	LPVOID lpParam
+);
+</code></pre>
+<p>参数介绍</p>
+<ul>
+<li><p>返回值：创建窗口的句柄，创建失败返回<code>NULL</code></p>
+</li>
+<li><p><code>dwExStyle</code>：高级属性，详细的可以上百度查，一般设为<code>NULL</code></p>
+</li>
+<li><p><code>lpClassName</code>：使用窗口类的类名，主窗口直接设为之前注册的窗口类名</p>
+</li>
+<li><p><code>lpWindowName</code>：窗口标题</p>
+</li>
+<li><p><code>dwStyle</code>：窗口的外观和行为的通用标志，可以使用<code>|</code>和<code>^</code>进行多选和反选</p>
+<ul>
+<li><code>WS_VISIBLE</code>：一开始就可见</li>
+<li><code>WS_OVERLAPPEDWINDOW</code>：创建一个具有<code>WS_OVERLAPPED，WS_CAPTION，WS_SYSMENU，WS_THICKFRAME，WS_MINIMIZEBOX，WS_MAXIMIZEBOX</code>风格的层叠窗口</li>
+<li><code>WS_OVERLAPPED</code>：产生一个层叠的窗口。一个层叠的窗口有一个标题条和一个边框。</li>
+<li><code>WS_THICKFRAME</code>：创建一个具有可调边框的窗口。</li>
+<li><code>WS_SYSMENU</code>：创建一个在标题条上带有窗口菜单的窗口，必须同时设定<code>WS_CAPTION</code>风格。</li>
+<li><code>WS_CAPTION</code>：创建一个有标题框的窗口。</li>
+<li><code>WS_MINIMIZEBOX</code>，<code>WS_MAXIMIZEBOX</code>：有最大化和最小化按钮的窗口。</li>
+<li><code>WS_POPUP</code>：弹出式窗口，用于全屏。</li>
+
+</ul>
+</li>
+<li><p><code>x, y</code>：窗口位置，可以用<code>CW_USEDEFAULT</code>使用缺省值（交给系统设置）</p>
+</li>
+<li><p><code>nWidth, nHeight</code>：窗口大小</p>
+</li>
+<li><p><code>hWndParent</code>：父窗口，对于主窗口直接设为<code>NULL</code></p>
+</li>
+<li><p><code>hMenu</code>：菜单句柄，或依据窗口风格指明一个子窗口标识，设为<code>NULL</code>即可</p>
+</li>
+<li><p><code>lpParam</code>：高级特征，此处设置为NULL即可</p>
+</li>
+
+</ul>
+<pre><code class='language-cpp' lang='cpp'>/* 宏定义 */
+#define Screen_FullWidth GetSystemMetrics(SM_CXSCREEN)
+#define Screen_FullHeight GetSystemMetrics(SM_CYSCREEN)
+#define Window_FullWidth 600
+#define Window_FullHeight 960
+/* WinMain */
+hwnd = 
+CreateWindowEx(WS_EX_CLIENTEDGE, &quot;WindowClass&quot;, &quot;&quot;, WS_VISIBLE | WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MINIMIZEBOX ^ WS_MAXIMIZEBOX, 
+(Screen_FullWidth - Window_FullWidth) / 2, (Screen_FullHeight - Window_FullHeight) / 2, Window_FullWidth, Window_FullHeight, NULL, NULL, hInstance, NULL);
+// 检查是否创建成功，失败则弹出消息框并退出程序
+if(hwnd == NULL) {
+	MessageBox(NULL,&quot;Window Creation Failed!&quot;, &quot;Error!&quot;, MB_ICONEXCLAMATION | MB_OK);
+	return 0;
+}
+
+/*
+将窗口的坐标如下设置将会创建一个居中的窗口
+(Screen_FullWidth - Window_FullWidth) / 2, (Screen_FullHeight - Window_FullHeight) / 2
+*/
+</code></pre>
+<p>&nbsp;</p>
+</body>
+</html>
