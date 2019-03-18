@@ -1,1 +1,80 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>事件处理</title></head>
+<body><h1>事件处理</h1>
+<h2>程序主循环</h2>
+<p>在创建好窗口之后，我们需要一个大的循环来保证程序不会直接退出，这就是程序的主循环</p>
+<pre><code class='language-cpp' lang='cpp'>// msg 是全局定义的一个 MSG 变量
+while (msg.message != WM_QUIT)  { // 没有接到退出程序的消息
+	if (PeekMessage(&amp;msg,0,0,0,PM_REMOVE)) {  // 检测消息队列中是否有消息
+		// 下面两行不重要，只管调用就好，可以自行百度
+		TranslateMessage(&amp;msg);
+		DispatchMessage(&amp;msg);
+        // 调用这两行后将会进入消息处理函数
+	}  
+	else {
+        // 进行绘图等操作
+	}
+}
+return msg.wParam;
+</code></pre>
+<p>简单来说，主事件循环的思路就是，要么接收消息并处理，要么进行其它操作</p>
+<p>看到这里，我们可以发现键盘、鼠标输入和绘图的处理，并不是同时的，只是由于电脑运行速度够快，我们无法察觉</p>
+<h2>事件处理函数</h2>
+<p>一个消息处理函数写成这样：</p>
+<pre><code class='language-cpp' lang='cpp'>LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+</code></pre>
+<p>几个参数：</p>
+<ul>
+<li><p><code>hwnd</code>：这个就是调用这个函数的窗口的句柄</p>
+</li>
+<li><p><code>Message</code>：接收到的消息的<code>id</code>（宏定义的整数，<code>WM</code>开头），表示接收到的消息的类型</p>
+<p>主要有几种（其它的可以百度或者去附件中查看）：</p>
+<ul>
+<li><code>WM_DESTROY</code>：窗口销毁后得到的消息</li>
+<li><code>WM_CREATE</code>：窗口被创建</li>
+<li><code>WM_MOVE</code>：窗口被移动</li>
+<li><code>WM_CLOSE</code>：窗口或应用程序将被关闭</li>
+<li><code>WM_QUIT</code>：程序被结束</li>
+<li><code>WM_KEYDOWM/WM_KEYUP</code>：某个键盘按键被按下/弹起</li>
+<li><code>WM_MOUSEMOVE</code>：鼠标移动</li>
+<li><code>WM_LBUTTONDOWN/WM_LBUTTONUP</code>：鼠标左键按下/弹起</li>
 
+</ul>
+</li>
+<li><p><code>wParam</code>：键盘的处理消息，可以得到键盘变动的键（宏定义的整数，<code>VK</code>开头，部分未被宏定义，可以直接用整数，可以去附件查看）</p>
+</li>
+<li><p><code>lParam</code>：鼠标的处理消息，可以得到鼠标的位置等</p>
+</li>
+
+</ul>
+<p>示例（推荐使用<code>switch</code>）</p>
+<pre><code class='language-cpp' lang='cpp'>static int x, y;
+LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+	switch(Message) {
+		case WM_DESTROY:
+			// 在这里调用释放资源、保存内容等函数
+			PostQuitMessage(0);
+			break;
+		case WM_MOUSEMOVE :
+			x = LOWORD(lParam);  // 鼠标指针的X坐标
+			y = HIWORD(lParam);  // 鼠标指针的Y坐标
+			break;
+		case WM_KEYDOWN :
+			switch(wParam) {
+				case VK_LEFT : // 左方向键被按下
+					break;
+				case &#39;W&#39; : // W 键被按下
+					break;
+			}
+			break;
+		default: return DefWindowProc(hwnd, Message, wParam, lParam);
+	}
+	return 0;
+}
+</code></pre>
+<p>&nbsp;</p>
+</body>
+</html>
