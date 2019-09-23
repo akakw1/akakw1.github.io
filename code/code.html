@@ -223,6 +223,6 @@ header, .context-menu, .megamenu-content, footer { font-family: "Segoe UI", Aria
 </style>
 </head>
 <body class='typora-export os-windows' >
-<div  id='write'  class = 'is-node'><h2><a name="%5Bcco-2015%5D-%E9%A5%A5%E9%A5%BF%E7%9A%84%E7%8B%90%E7%8B%B8" class="md-header-anchor"></a><span>[CCO 2015] 饥饿的狐狸</span></h2><p><a href='https://www.luogu.org/problem/P4801'><span>传送门</span></a></p><p>&nbsp;</p></div>
+<div  id='write'  class = 'is-node'><h2><a name="%5Bcco-2015%5D-%E9%A5%A5%E9%A5%BF%E7%9A%84%E7%8B%90%E7%8B%B8" class="md-header-anchor"></a><span>[CCO 2015] 饥饿的狐狸</span></h2><p><a href='https://www.luogu.org/problem/P4801'><span>传送门</span></a></p><h3><a name="%E9%A2%98%E6%84%8F" class="md-header-anchor"></a><span>题意</span></h3><p><span>有n个饼干和一盆水，都有温度，先喝一口水，每次吃饼干前可以喝水也可以不喝，吃一块饼干的美味度是这个饼干的温度与上一次吃的食物的温度之差（绝对值），问美味度之和的最小和最大值</span></p><h3><a name="%E9%A2%98%E8%A7%A3" class="md-header-anchor"></a><span>题解</span></h3><p><span>先排序</span></p><p><span>最小值：以水的温度为分界点，将左边和右边的分别按顺序吃掉，结果为</span><code>max(0, w - a[1]) + max(0, a[n] - w)</code></p><p><span>最大值：每次吃最左边的和最右边的，吃每一块前考虑喝水是否更优</span></p></div>
 </body>
 </html>
