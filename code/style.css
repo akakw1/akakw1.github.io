@@ -11,3 +11,16 @@ h1 {
   font-size: 54px;
   text-align: center;
 }
+#iframe-page {
+    position: relative;
+    overflow: hidden;
+    padding-top: 56.25%;
+}
+#main-html {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
